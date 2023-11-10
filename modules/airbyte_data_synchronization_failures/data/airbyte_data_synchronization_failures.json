@@ -1,0 +1,114 @@
+{
+  "name": "airbyte_data_synchronization_failures",
+  "description": "This incident type refers to any issues related to the synchronization of data in Airbyte, which is a data integration platform used to move data from various sources to different destinations. The failure could be due to a variety of reasons, such as network connectivity issues, misconfigured settings, or data compatibility issues. When this incident occurs, data may not be transferred correctly, leading to data discrepancies and potential data loss. It is crucial to resolve this issue as soon as possible to ensure that data is correctly synchronized and up-to-date.",
+  "params": [
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    },
+    {
+      "name": "DEPLOYMENT_NAME",
+      "value": ""
+    },
+    {
+      "name": "AIRBYTE_POD_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Airbyte Data Synchronization Failures.\nThis incident type refers to any issues related to the synchronization of data in Airbyte, which is a data integration platform used to move data from various sources to different destinations. The failure could be due to a variety of reasons, such as network connectivity issues, misconfigured settings, or data compatibility issues. When this incident occurs, data may not be transferred correctly, leading to data discrepancies and potential data loss. It is crucial to resolve this issue as soon as possible to ensure that data is correctly synchronized and up-to-date."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if the Airbyte pod is running"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl get pods -n ${NAMESPACE} -l app.kubernetes.io/component=airbyte`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the logs of the Airbyte pod"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl logs -n ${NAMESPACE} ${AIRBYTE_POD_NAME}`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if the Airbyte pod has the correct environment variables set"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE | `env | grep AIRBYTE_`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the configuration of the Airbyte pod"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl describe pod -n ${NAMESPACE} ${AIRBYTE_POD_NAME}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the resource consumption of the Airbyte pod"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl top pod -n ${NAMESPACE} ${AIRBYTE_POD_NAME}`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Restart the data synchronization process to ensure that it is running correctly and that any errors have been resolved."
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | random=1 | limit=1 | invoke_restart_sync_script($NAMESPACE, $DEPLOYMENT_NAME)"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## If necessary, roll back to a previous version of the data synchronization process to restore any lost data and prevent further data loss."
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | random=1 | limit=1 | invoke_rollback_previous_deployment($NAMESPACE, $DEPLOYMENT_NAME)"
+    }
+  ]
+}
